@@ -14,7 +14,6 @@ export const client = new Client({
 logger.info("Starting database connection...");
 try {
   await client.connect();
-  await client.end();
 } catch (error) {
   logger.error("Error connecting to database\n", error);
   process.exit(1);
