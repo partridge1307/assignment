@@ -6,7 +6,7 @@ describe("Sign up", () => {
     const res = await app.request("/api/v1/auth/sign-up", {
       method: "POST",
       body: JSON.stringify({
-        username: "test",
+        username: "test2",
         password: "password"
       }),
     })
@@ -17,7 +17,7 @@ describe("Sign up", () => {
         success: true,
         data: {
           id: expect.any(Number),
-          username: "test",
+          username: "test2",
           createdAt: expect.any(String),
         }
       });
@@ -36,7 +36,7 @@ describe("Sign up", () => {
     const res = await app.request("/api/v1/auth/sign-up", {
       method: "POST",
       body: JSON.stringify({
-        luci: "test",
+        luci: "test2",
         me_may_beo: "password"
       }),
     });
@@ -55,7 +55,7 @@ describe("Sign in", () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
-        username: "test",
+        username: "test2",
         password: "password"
       }),
     });
@@ -74,7 +74,7 @@ describe("Sign in", () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
-        username: "test",
+        username: "test2",
         password: "wrong_password"
       }),
     });
@@ -106,7 +106,7 @@ describe("Sign in", () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
-        luci: "test",
+        luci: "test2",
         me_may_beo: "password"
       }),
     });

@@ -1,13 +1,16 @@
-import { date, foreignKey, index, pgTable, serial, text, uniqueIndex } from "drizzle-orm/pg-core";
+import { date, foreignKey, index, pgEnum, pgTable, serial, text, uniqueIndex } from "drizzle-orm/pg-core";
+
+export const permissionsEnum = pgEnum('permissions', ['admin', 'user']);
 
 export const users = pgTable('users', {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique("unique_username"),
   password: text("password").notNull(),
+  permission: permissionsEnum("permission").notNull().default('user'),
   created_at: date("created_at", { mode: "string" }).notNull().defaultNow()
 }, (table) => {
   return {
-    usernameIdx: uniqueIndex("username_idx").on(table.username)
+    usernameIdx: uniqueIndex("user_username_idx").on(table.username)
   };
 });
 export type Users = typeof users.$inferSelect;
@@ -24,7 +27,7 @@ export const sessions = pgTable('sessions', {
       foreignColumns: [users.id],
       name: "user_id_fk",
     }),
-    user_id_idx: index("user_id_idx").on(table.user_id)
+    user_id_idx: index("session_user_id_idx").on(table.user_id)
   }
 });
 export type Sessions = typeof sessions.$inferSelect;

@@ -10,11 +10,18 @@ export const generateToken = (type: keyof typeof TokenEnum, payload: JSONObject,
   if (type === TokenEnum.ACCESS)
     return jwt.sign(payload, Bun.env.JWT__SECRET!, {
       expiresIn,
-      notBefore: Date.now(),
     })
 
   return jwt.sign(payload, Bun.env.JWT__SECRET!, {
     expiresIn,
-    notBefore: Date.now(),
   });
+};
+
+export const verifyToken = (type: keyof typeof TokenEnum, token: string, ignoreExpiration = false) => {
+  if (type === TokenEnum.ACCESS)
+    return jwt.verify(token, Bun.env.JWT__SECRET!, {
+      ignoreExpiration,
+    }) as JSONObject;
+
+  return jwt.verify(token, Bun.env.JWT__SECRET!) as JSONObject;
 };

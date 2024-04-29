@@ -8,6 +8,7 @@ declare global {
       DB__PASS?: string,
       DB__DATABASE?: string
       JWT__SECRET?: string
+      WH__URL?: string
     }
   }
 }

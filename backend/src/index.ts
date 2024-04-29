@@ -13,6 +13,8 @@ app.use("*", cors({ origin: "*", allowMethods: ['GET', "POST", "PUT", "DELETE", 
 
 // Routes
 app.route("/auth", (await import("./routes/auth")).default);
+app.route("/books", (await import("./routes/books")).default);
+app.route("/authors", (await import("./routes/authors")).default);
 
 // Error handling
 app.onError((_, c) => {

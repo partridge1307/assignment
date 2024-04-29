@@ -2,8 +2,10 @@ import type { Context } from "hono";
 import { z } from "zod";
 import { userSchema } from "./sign-up";
 import db from "@/config/db";
-import { TokenEnum, generateToken } from "@/lib/auth";
+import { generateToken } from "@/lib/auth";
 import { sessions } from "$/db/schema/users";
+import { setCookie } from "hono/cookie"
+import logger from "@/config/logger";
 
 const signIn = async (ctx: Context) => {
   try {
@@ -25,13 +27,25 @@ const signIn = async (ctx: Context) => {
     }, 401);
 
     // Generate tokens
-    const accessToken = generateToken(TokenEnum.ACCESS as keyof typeof TokenEnum, { id: user.id }, "15m");
-    const refreshToken = generateToken(TokenEnum.REFRESH as keyof typeof TokenEnum, { id: user.id }, "7d");
+    const accessToken = generateToken("ACCESS", { id: user.id }, "15m");
+    const refreshToken = generateToken("REFRESH", { id: user.id }, "7d");
 
     await db.insert(sessions).values({
       user_id: user.id,
       token: refreshToken,
     })
+
+    setCookie(ctx, "refreshToken", refreshToken, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    setCookie(ctx, "accessToken", accessToken, {
+      expires: new Date(Date.now() + 20 * 60 * 1000),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
 
     return ctx.json({
       success: true,
@@ -48,7 +62,7 @@ const signIn = async (ctx: Context) => {
       }, 400);
     }
 
-    console.error(error);
+    logger.error(error);
 
     return ctx.json({
       success: false,
