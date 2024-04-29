@@ -6,7 +6,7 @@ logger.info("Migrating database...");
 try {
   await migrate(db, { migrationsFolder: "./db/migrations" })
   await client.end();
+  logger.info("Database migration successful!");
 } catch (error) {
   logger.error("Error migrating database\n", error);
 }
-logger.info("Database migration successful!");
