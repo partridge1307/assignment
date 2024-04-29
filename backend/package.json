@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "module": "src/index.ts",
+  "author": "Partridge",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "migrate": "bun drizzle-kit generate:pg && bun run ./migrate.ts | pino-pretty",
+    "dev": "bun --hot run src/index.ts | pino-pretty"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.11.5",
+    "drizzle-kit": "^0.20.17",
+    "pino-pretty": "^11.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.9",
+    "hono": "^4.2.9",
+    "pg": "^8.11.5",
+    "pino": "^9.0.0"
+  }
+}
