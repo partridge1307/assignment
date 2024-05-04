@@ -6,7 +6,10 @@ const getBook = async (ctx: Context) => {
 
   try {
     const book = await db.query.books.findFirst({
-      where: (books, { eq }) => eq(books.id, bookId)
+      where: (books, { eq }) => eq(books.id, bookId),
+      with: {
+        author: true
+      }
     })
 
     return ctx.json({

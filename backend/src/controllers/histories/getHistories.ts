@@ -7,7 +7,15 @@ const getHistories = async (ctx: HonoContext) => {
 
   try {
     const histories = await db.query.histories.findMany({
-      where: (histories, { eq }) => eq(histories.user_id, id)
+      where: (histories, { eq }) => eq(histories.user_id, id),
+      with: {
+        book: {
+          columns: {
+            name: true,
+            cover: true
+          }
+        }
+      }
     })
 
     return ctx.json({
@@ -15,7 +23,7 @@ const getHistories = async (ctx: HonoContext) => {
       data: histories
     })
   } catch (error) {
-    logger.error(error)
+    console.error(error)
     return ctx.json({
       success: false,
       message: 'Failed to get histories'

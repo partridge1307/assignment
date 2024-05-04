@@ -8,6 +8,6 @@ const authors = new Hono();
 
 authors.get("/", getAuthor);
 authors.post("/", requireAdmin, addAuthor);
-authors.patch("/", requireAdmin, updateAuthor);
+authors.put("/", requireAdmin, updateAuthor);
 
 export default authors;

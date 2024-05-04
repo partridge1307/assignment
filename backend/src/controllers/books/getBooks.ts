@@ -3,20 +3,20 @@ import type { Context } from "hono";
 
 const getBooks = async (ctx: Context) => {
   const url = new URL(ctx.req.url);
-  let bookName = url.searchParams.get("name");
-
-  if (!bookName) {
-    return ctx.json({
-      success: false,
-      message: "Please provide a book name",
-    }, 400)
-  }
-
-  bookName = decodeURIComponent(bookName);
+  const page = Number(url.searchParams.get("page") || 1);
 
   try {
     const books = await db.query.books.findMany({
-      where: ((books, { ilike }) => ilike(books.name, bookName))
+      columns: {
+        id: true,
+        name: true,
+        cover: true,
+        price: true,
+        sold: true,
+        on_sale: true
+      },
+      limit: 10,
+      offset: (page - 1) * 10
     });
 
     return ctx.json({

@@ -9,7 +9,7 @@ const carts = new Hono();
 
 carts.get("/", requireLogin, getCarts)
 carts.post("/", requireLogin, addToCart)
-carts.patch("/", requireLogin, updateCart)
-carts.delete("/", requireLogin, deleteFromCart)
+carts.put("/", requireLogin, updateCart)
+carts.delete("/:id", requireLogin, deleteFromCart)
 
 export default carts;

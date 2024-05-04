@@ -1,4 +1,6 @@
+import { relations } from "drizzle-orm";
 import { pgTable, serial, text, doublePrecision, boolean, date, uniqueIndex, foreignKey, integer } from "drizzle-orm/pg-core";
+import { carts } from "./carts";
 
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
@@ -35,3 +37,15 @@ export const authors = pgTable("authors", {
 });
 export type Authors = typeof authors.$inferSelect;
 export type newAuthor = typeof authors.$inferInsert;
+
+export const booksRelations = relations(books, ({ one, many }) => ({
+  author: one(authors, {
+    fields: [books.id],
+    references: [authors.id]
+  }),
+  carts: many(carts)
+}))
+
+export const authorsRelations = relations(authors, ({ many }) => ({
+  books: many(books)
+}))

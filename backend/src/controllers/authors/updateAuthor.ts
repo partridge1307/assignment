@@ -3,6 +3,7 @@ import db from "@/config/db";
 import logger from "@/config/logger";
 import { eq } from "drizzle-orm";
 import type { Context } from "hono";
+import { DatabaseError } from "pg";
 import { z } from "zod";
 
 const authorSchema = z.object({
@@ -28,12 +29,21 @@ const updateAuthor = async (ctx: Context) => {
       });
     }
 
+    if (error instanceof DatabaseError) {
+      if (error.code === "23505") {
+        return ctx.json({
+          success: false,
+          message: "Author already exists"
+        }, 400)
+      }
+    }
+
     logger.error(error);
 
     return ctx.json({
       success: false,
       message: "An error occurred while updating the author"
-    });
+    }, 500)
   }
 };
 

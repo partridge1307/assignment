@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1714399443969,
-      "tag": "0000_green_terror",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1714410264508,
-      "tag": "0001_faulty_tony_stark",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1714419213898,
-      "tag": "0002_tearful_namora",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1714462000472,
-      "tag": "0003_loose_mulholland_black",
+      "when": 1714556279014,
+      "tag": "0000_fantastic_the_initiative",
       "breakpoints": true
     }
   ]

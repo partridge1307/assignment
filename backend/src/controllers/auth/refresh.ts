@@ -7,16 +7,14 @@ import { getCookie, setCookie } from "hono/cookie";
 import logger from "@/config/logger";
 
 const refresh = async (ctx: Context) => {
-  const accessToken = getCookie(ctx, "accessToken");
   const refreshToken = getCookie(ctx, "refreshToken");
 
-  if (!accessToken || !refreshToken) return ctx.json({
+  if (!refreshToken) return ctx.json({
     success: false,
     message: "Invalid token"
   }, 401);
 
   try {
-    verifyToken("ACCESS", accessToken, true);
     const decoded = verifyToken("REFRESH", refreshToken);
     const userId = Number(decoded.id);
 
@@ -47,10 +45,14 @@ const refresh = async (ctx: Context) => {
     setCookie(ctx, "refreshToken", newRefreshToken, {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
+      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production",
     })
     setCookie(ctx, "accessToken", newAccessToken, {
-      expires: new Date(Date.now() + 20 * 60 * 1000),
+      expires: new Date(Date.now() + 15 * 60 * 1000),
       httpOnly: true,
+      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production",
     });
 
 

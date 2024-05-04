@@ -6,9 +6,10 @@ declare global {
       DB__PORT?: number,
       DB__USER?: string,
       DB__PASS?: string,
-      DB__DATABASE?: string
-      JWT__SECRET?: string
-      WH__URL?: string
+      DB__DATABASE?: string,
+      JWT__SECRET?: string,
+      WH__URL?: string,
+      RCM__SECRET?: string,
     }
   }
 }

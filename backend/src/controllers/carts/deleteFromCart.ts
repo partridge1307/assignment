@@ -5,13 +5,9 @@ import type { HonoContext } from "@/types/hono";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-const productSchema = z.object({
-  bookId: z.number(),
-});
-
 const deleteFromCart = async (ctx: HonoContext) => {
   try {
-    const { bookId } = productSchema.parse(await ctx.req.json());
+    const bookId = Number(ctx.req.param('id'));
     const { id } = ctx.get('user');
 
     await db.delete(carts).where(and(eq(carts.user_id, id), eq(carts.book_id, bookId)));

@@ -1,12 +1,12 @@
 import { describe, test, expect } from "bun:test"
 import app from "@/index"
 
-describe("Sign up", () => {
-  test("/POST /api/v1/auth/sign-up (New or existing user)", async () => {
+describe("/POST /api/v1/auth/sign-up", () => {
+  test("new-or-existing-user", async () => {
     const res = await app.request("/api/v1/auth/sign-up", {
       method: "POST",
       body: JSON.stringify({
-        username: "test2",
+        username: "test",
         password: "password"
       }),
     })
@@ -17,7 +17,7 @@ describe("Sign up", () => {
         success: true,
         data: {
           id: expect.any(Number),
-          username: "test2",
+          username: "test",
           createdAt: expect.any(String),
         }
       });
@@ -32,11 +32,11 @@ describe("Sign up", () => {
     }
   });
 
-  test("/POST /api/v1/auth/sign-up (Invalid data)", async () => {
+  test("invalid-user-data", async () => {
     const res = await app.request("/api/v1/auth/sign-up", {
       method: "POST",
       body: JSON.stringify({
-        luci: "test2",
+        luci: "test",
         me_may_beo: "password"
       }),
     });
@@ -50,12 +50,12 @@ describe("Sign up", () => {
   });
 });
 
-describe("Sign in", () => {
-  test("/POST /api/v1/auth/sign-in (Correct credentials)", async () => {
+describe("/POST /api/v1/auth/sign-in", () => {
+  test("correct-credentials", async () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
-        username: "test2",
+        username: "test",
         password: "password"
       }),
     });
@@ -70,11 +70,11 @@ describe("Sign in", () => {
     });
   });
 
-  test("/POST /api/v1/auth/sign-in (Incorrect credentials)", async () => {
+  test("incorrect-credentials", async () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
-        username: "test2",
+        username: "test",
         password: "wrong_password"
       }),
     });
@@ -86,7 +86,7 @@ describe("Sign in", () => {
     });
   });
 
-  test("/POST /api/v1/auth/sign-in (User not found)", async () => {
+  test("user-not-found", async () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
@@ -102,11 +102,11 @@ describe("Sign in", () => {
     });
   });
 
-  test("/POST /api/v1/auth/sign-in (Invalid data)", async () => {
+  test("invalid-user-data", async () => {
     const res = await app.request("/api/v1/auth/sign-in", {
       method: "POST",
       body: JSON.stringify({
-        luci: "test2",
+        luci: "test",
         me_may_beo: "password"
       }),
     });

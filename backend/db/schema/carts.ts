@@ -14,6 +14,13 @@ export const carts = pgTable('carts', {
 });
 export type newCart = typeof carts.$inferInsert;
 
-export const usersRelations = relations(users, ({ many }) => ({
-  carts: many(carts)
+export const cartsRelations = relations(carts, ({ one }) => ({
+  users: one(users, {
+    fields: [carts.user_id],
+    references: [users.id]
+  }),
+  books: one(books, {
+    fields: [carts.book_id],
+    references: [books.id]
+  })
 }))

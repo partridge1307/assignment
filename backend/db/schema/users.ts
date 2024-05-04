@@ -1,4 +1,7 @@
+import { relations } from "drizzle-orm";
 import { date, foreignKey, index, pgEnum, pgTable, serial, text, uniqueIndex } from "drizzle-orm/pg-core";
+import { carts } from "./carts";
+import { histories } from "./histories";
 
 export const permissionsEnum = pgEnum('permissions', ['admin', 'user']);
 
@@ -18,7 +21,7 @@ export type newUser = typeof users.$inferInsert;
 
 export const sessions = pgTable('sessions', {
   user_id: serial("user_id").notNull(),
-  token: text("token").notNull().unique("unique_token"),
+  token: text("token").notNull(),
   created_at: date("created_at", { mode: "string" }).notNull().defaultNow()
 }, (table) => {
   return {
@@ -32,3 +35,8 @@ export const sessions = pgTable('sessions', {
 });
 export type Sessions = typeof sessions.$inferSelect;
 export type newSession = typeof sessions.$inferInsert;
+
+export const usersRelations = relations(users, ({ many }) => ({
+  carts: many(carts),
+  histories: many(histories)
+}))

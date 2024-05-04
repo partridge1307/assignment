@@ -7,7 +7,15 @@ const getCarts = async (ctx: HonoContext) => {
 
   try {
     const carts = await db.query.carts.findMany({
-      where: (carts, { eq }) => eq(carts.user_id, id)
+      where: (carts, { eq }) => eq(carts.user_id, id),
+      with: {
+        books: {
+          columns: {
+            cover: true,
+            name: true
+          }
+        }
+      }
     })
 
     return ctx.json({

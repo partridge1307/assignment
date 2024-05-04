@@ -1,6 +1,7 @@
 import { books, type newBook } from "$/db/schema/books";
 import db from "@/config/db";
 import logger from "@/config/logger";
+import client from "@/config/model";
 import type { HonoContext } from "@/types/hono";
 import { DatabaseError } from "pg";
 import { z } from "zod";
@@ -29,7 +30,7 @@ const addBook = async (ctx: HonoContext) => {
     });
     if (!res.ok) throw new Error("Failed to upload the cover");
     // @ts-ignore
-    const url = (await res.json()).attachments[0].url;
+    const url = (await res.json()).attachments[0].proxy_url;
 
     const newBook: newBook = {
       cover: url,
