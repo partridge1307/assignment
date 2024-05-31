@@ -1,9 +1,7 @@
-import { authors } from "$/db/schema/books";
-import db from "@/config/db";
+import prisma from "@/config/db";
 import logger from "@/config/logger";
-import { eq } from "drizzle-orm";
+import { Prisma } from "@prisma/client";
 import type { Context } from "hono";
-import { DatabaseError } from "pg";
 import { z } from "zod";
 
 const authorSchema = z.object({
@@ -15,35 +13,48 @@ const updateAuthor = async (ctx: Context) => {
   try {
     const { id, name } = authorSchema.parse(await ctx.req.json());
 
-    const updatedAuthor = await db.update(authors).set({ name }).where(eq(authors.id, id)).returning();
+    const updatedAuthor = await prisma.authors.update({
+      data: {
+        name,
+      },
+      where: {
+        id,
+      },
+    });
 
     return ctx.json({
       success: true,
-      data: updatedAuthor
+      data: updatedAuthor,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return ctx.json({
         success: false,
-        message: error.errors
+        message: error.errors,
       });
     }
 
-    if (error instanceof DatabaseError) {
-      if (error.code === "23505") {
-        return ctx.json({
-          success: false,
-          message: "Author already exists"
-        }, 400)
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return ctx.json(
+          {
+            success: false,
+            message: "Author already exists",
+          },
+          400,
+        );
       }
     }
 
     logger.error(error);
 
-    return ctx.json({
-      success: false,
-      message: "An error occurred while updating the author"
-    }, 500)
+    return ctx.json(
+      {
+        success: false,
+        message: "An error occurred while updating the author",
+      },
+      500,
+    );
   }
 };
 

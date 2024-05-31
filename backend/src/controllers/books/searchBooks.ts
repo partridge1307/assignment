@@ -1,4 +1,4 @@
-import db from "@/config/db";
+import prisma from "@/config/db";
 import type { Context } from "hono";
 
 const searchBooks = async (ctx: Context) => {
@@ -7,15 +7,20 @@ const searchBooks = async (ctx: Context) => {
   if (!query) return ctx.json({ error: "query is required" }, 400);
 
   try {
-    const books = await db.query.books.findMany({
-      where: (books, { ilike }) => ilike(books.name, `%${query}%`)
-    })
+    const books = await prisma.books.findMany({
+      where: {
+        name: {
+          startsWith: query,
+          mode: "insensitive",
+        },
+      },
+    });
 
     return ctx.json({ success: true, data: books });
   } catch (error) {
     console.error(error);
     return ctx.json({ success: false, message: "Something went wrong" }, 500);
   }
-}
+};
 
 export default searchBooks;

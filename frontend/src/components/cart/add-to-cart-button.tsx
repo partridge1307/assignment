@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -7,7 +7,13 @@ import { addToCart as addToCartAPI } from "@/api/carts";
 import { useToast } from "../ui/use-toast";
 import { AxiosError } from "axios";
 
-const addToCart = ({ bookId, isLoggedIn }: { bookId: number, isLoggedIn: boolean }) => {
+const addToCart = ({
+  bookId,
+  isLoggedIn,
+}: {
+  bookId: number;
+  isLoggedIn: boolean;
+}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -19,23 +25,23 @@ const addToCart = ({ bookId, isLoggedIn }: { bookId: number, isLoggedIn: boolean
         return toast({
           title: "Failed to add to cart",
           description: error.response?.data.message,
-          variant: "destructive"
-        })
+          variant: "destructive",
+        });
       }
 
       toast({
         title: "Failed to add to cart",
         description: "An error occurred",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["cart-count"]
+        queryKey: ["cart-count"],
       });
       router.refresh();
-    }
-  })
+    },
+  });
 
   function onClickHandler() {
     if (!isLoggedIn) return router.push("/sign-in");
@@ -46,10 +52,11 @@ const addToCart = ({ bookId, isLoggedIn }: { bookId: number, isLoggedIn: boolean
     <Button
       disabled={mutation.isPending}
       onClick={onClickHandler}
-      className={mutation.isPending ? "opacity-50" : undefined}>
-      Add to cart
+      className={mutation.isPending ? "opacity-50" : undefined}
+    >
+      Rent
     </Button>
   );
-}
+};
 
 export default addToCart;

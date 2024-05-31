@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model authors {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique(map: "author_unique_name_idx")
+  created_at DateTime @default(now()) @db.Date
+  books      books[]
+}
+
+model books {
+  id          Int         @id @default(autoincrement())
+  cover       String
+  name        String      @unique(map: "book_unique_name_idx")
+  author_id   Int         @default(autoincrement())
+  description String
+  pages       Int
+  position    String
+  sold        Int         @default(0)
+  created_at  DateTime    @default(now()) @db.Date
+  authors     authors     @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "book_author_id_fk")
+  tags        book_tag[]
+  carts       carts[]
+  histories   histories[]
+}
+
+model carts {
+  user_id  Int
+  book_id  Int
+  quantity Int      @default(1)
+  rent_to  DateTime
+  books    books    @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "carts_book_id_books_id_fk")
+  users    users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "carts_user_id_users_id_fk")
+
+  @@id([user_id, book_id], map: "carts_user_id_book_id_pk")
+}
+
+model histories {
+  user_id  Int
+  book_id  Int
+  quantity Int      @default(1)
+  rent_to  DateTime
+  books    books    @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "histories_book_id_books_id_fk")
+  users    users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "histories_user_id_users_id_fk")
+
+  @@id([user_id, book_id], map: "histories_user_id_book_id_pk")
+}
+
+model sessions {
+  user_id    Int      @default(autoincrement())
+  token      String
+  created_at DateTime @default(now()) @db.Date
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id_fk")
+
+  @@index([user_id], map: "session_user_id_idx")
+  @@id([user_id, token], map: "sessions_user_id")
+}
+
+model users {
+  id            Int         @id @default(autoincrement())
+  username      String      @unique(map: "unique_username")
+  password      String
+  permission    permissions @default(user)
+  phone_number  String?
+  address       String?
+  created_at    DateTime    @default(now()) @db.Date
+  carts         carts[]
+  histories     histories[]
+  sessions      sessions[]  @ignore
+}
+
+enum permissions {
+  admin
+  user
+}
+
+enum book_tag {
+  FICTION
+  NON_FICTION
+  ROMANCE
+  MYSTERY
+  FANTASY
+  SCIENCE_FICTION
+  HORROR
+  THRILLER
+  HISTORY
+  BIOGRAPHY
+}

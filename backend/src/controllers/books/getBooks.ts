@@ -1,4 +1,5 @@
-import db from "@/config/db";
+import prisma from "@/config/db";
+import logger from "@/config/logger";
 import type { Context } from "hono";
 
 const getBooks = async (ctx: Context) => {
@@ -6,29 +7,32 @@ const getBooks = async (ctx: Context) => {
   const page = Number(url.searchParams.get("page") || 1);
 
   try {
-    const books = await db.query.books.findMany({
-      columns: {
+    const books = await prisma.books.findMany({
+      select: {
         id: true,
         name: true,
         cover: true,
-        price: true,
         sold: true,
-        on_sale: true
+        position: true,
       },
-      limit: 10,
-      offset: (page - 1) * 10
+      take: 10,
+      skip: (page - 1) * 10,
     });
 
     return ctx.json({
       success: true,
-      data: books
-    })
+      data: books,
+    });
   } catch (error) {
-    return ctx.json({
-      success: false,
-      message: "An error occurred while fetching books"
-    }, 500);
+    logger.info(error);
+    return ctx.json(
+      {
+        success: false,
+        message: "An error occurred while fetching books",
+      },
+      500,
+    );
   }
-}
+};
 
 export default getBooks;

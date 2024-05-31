@@ -1,28 +1,24 @@
-import { books } from "$/db/schema/books";
-import db from "@/config/db";
-import { sql } from "drizzle-orm";
+import prisma from "@/config/db";
 import type { Context } from "hono";
 
 const getRandomBooks = async (ctx: Context) => {
   try {
-    const randomBooks = await db.select({
-      id: books.id,
-      name: books.name,
-      cover: books.cover,
-      price: books.price,
-      on_sale: books.on_sale
-    }).from(books).limit(10).orderBy(sql`RANDOM()`);
+    const sqlRaw = prisma.$queryRaw`SELECT id, name, cover FROM books ORDER BY random() LIMIT 10`;
+    const randomBooks = await sqlRaw;
 
     return ctx.json({
       success: true,
-      data: randomBooks
-    })
+      data: randomBooks,
+    });
   } catch (error) {
-    return ctx.json({
-      success: false,
-      message: "An error occurred while fetching books"
-    }, 500);
+    return ctx.json(
+      {
+        success: false,
+        message: "An error occurred while fetching books",
+      },
+      500,
+    );
   }
-}
+};
 
-export default getRandomBooks
+export default getRandomBooks;

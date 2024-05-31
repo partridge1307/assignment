@@ -1,4 +1,4 @@
-version: "3.8"
+# version: "3"
 
 services:
   db:
@@ -8,10 +8,37 @@ services:
     environment:
       POSTGRES_PASSWORD: "130703"
       POSTGRES_USER: "root"
+      POSTGRES_DB: "assignment"
     ports:
       - "5432:5432"
     volumes:
       - "db:/var/lib/postgresql/data"
+    networks:
+      - assignment
+  # server:
+  #   container_name: "server"
+  #   build: ./backend
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - assignment
+  #   depends_on:
+  #     - db
+  #   env_file:
+  #     - ./backend/.env
+  # web:
+  #   container_name: "web"
+  #   build: ./frontend
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - assignment
+  #   depends_on:
+  #     - server
+  #     - db
 
 volumes:
   db:
+
+networks:
+  assignment:

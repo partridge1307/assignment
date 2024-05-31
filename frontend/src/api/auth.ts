@@ -1,20 +1,23 @@
-import api from "@/lib/api"
+import api from "@/lib/api";
 import { AxiosError } from "axios";
-import { z } from "zod"
+import { z } from "zod";
 
 type User = {
   id: number;
   username: string;
   created_at: string;
-  permission: 'admin' | 'user';
-}
+  permission: "admin" | "user";
+};
 
 export const signInSchema = z.object({
   username: z.string().min(3).max(64),
   password: z.string().min(8).max(255),
-})
+});
 
-export const signIn = async ({ username, password }: z.infer<typeof signInSchema>) => {
+export const signIn = async ({
+  username,
+  password,
+}: z.infer<typeof signInSchema>) => {
   try {
     const { data } = await api.post("/auth/sign-in", {
       username,
@@ -31,22 +34,33 @@ export const signIn = async ({ username, password }: z.infer<typeof signInSchema
 
     throw error;
   }
-}
+};
 
-export const signUpSchema = z.object({
-  username: z.string().min(3).max(64),
-  password: z.string().min(8).max(255),
-  confirmPassword: z.string().min(8).max(255)
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-})
+export const signUpSchema = z
+  .object({
+    username: z.string().min(3).max(64),
+    password: z.string().min(8).max(255),
+    confirmPassword: z.string().min(8).max(255),
+    phone_number: z.string().min(10),
+    address: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-export const signUp = async ({ username, password }: z.infer<typeof signUpSchema>) => {
+export const signUp = async ({
+  username,
+  password,
+  phone_number,
+  address,
+}: z.infer<typeof signUpSchema>) => {
   try {
     const { data } = await api.post("/auth/sign-up", {
       username,
       password,
+      phone_number,
+      address,
     });
 
     return data;
@@ -63,7 +77,7 @@ export const signUp = async ({ username, password }: z.infer<typeof signUpSchema
 
     throw error;
   }
-}
+};
 
 export async function asyncGetUser() {
   const cookies = (await import("next/headers")).cookies;
@@ -74,7 +88,7 @@ export async function asyncGetUser() {
     const { data } = await api.get("/auth/session", {
       headers: {
         cookie: `accessToken=${authToken}`,
-      }
+      },
     });
     return data.data as User;
   } catch (error) {

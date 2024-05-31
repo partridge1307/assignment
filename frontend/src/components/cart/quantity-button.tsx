@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { updateCart } from "@/api/carts";
@@ -8,7 +8,15 @@ import { AxiosError } from "axios";
 import { useToast } from "../ui/use-toast";
 import { usePrevious } from "@/hooks/usePrevious";
 
-const QuantityButton = ({ initialQuantity, bookId }: { initialQuantity: number, bookId: number }) => {
+const QuantityButton = ({
+  initialQuantity,
+  initialDate,
+  bookId,
+}: {
+  initialQuantity: number;
+  initialDate: string;
+  bookId: number;
+}) => {
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(initialQuantity);
   const previousQuantity = usePrevious(quantity);
@@ -16,49 +24,61 @@ const QuantityButton = ({ initialQuantity, bookId }: { initialQuantity: number, 
   const mutation = useMutation({
     mutationFn: updateCart,
     onError: (error) => {
-      !!previousQuantity && setQuantity(previousQuantity)
+      !!previousQuantity && setQuantity(previousQuantity);
 
       if (error instanceof AxiosError) {
         toast({
-          title: 'Error',
+          title: "Error",
           description: error.response?.data.message,
-          variant: 'destructive'
-        })
+          variant: "destructive",
+        });
         return;
       }
 
       toast({
-        title: 'Error',
-        description: 'An error occurred',
-        variant: 'destructive'
-      })
+        title: "Error",
+        description: "An error occurred",
+        variant: "destructive",
+      });
     },
     onMutate: (payload) => {
-      setQuantity(payload.quantity)
+      setQuantity(payload.quantity);
     },
-  })
+  });
 
-  return <div className="space-x-4">
-    <Button
-      disabled={quantity <= 1 || mutation.isPending}
-      size={'sm'}
-      variant={'ghost'}
-      onClick={() => mutation.mutate({
-        bookId,
-        quantity: quantity - 1
-      })}
-    >-</Button>
-    <span>{quantity}</span>
-    <Button
-      disabled={mutation.isPending}
-      size={'sm'}
-      variant={'ghost'}
-      onClick={() => mutation.mutate({
-        bookId,
-        quantity: quantity + 1
-      })}
-    >+</Button>
-  </div >
-}
+  return (
+    <div className="space-x-4">
+      <Button
+        disabled={quantity <= 1 || mutation.isPending}
+        size={"sm"}
+        variant={"ghost"}
+        onClick={() =>
+          mutation.mutate({
+            bookId,
+            quantity: quantity - 1,
+            rent_to: initialDate,
+          })
+        }
+      >
+        -
+      </Button>
+      <span>{quantity}</span>
+      <Button
+        disabled={mutation.isPending}
+        size={"sm"}
+        variant={"ghost"}
+        onClick={() =>
+          mutation.mutate({
+            bookId,
+            quantity: quantity + 1,
+            rent_to: initialDate,
+          })
+        }
+      >
+        +
+      </Button>
+    </div>
+  );
+};
 
-export default QuantityButton
+export default QuantityButton;

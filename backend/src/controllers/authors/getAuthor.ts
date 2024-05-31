@@ -1,4 +1,4 @@
-import db from "@/config/db";
+import prisma from "@/config/db";
 import logger from "@/config/logger";
 import type { Context } from "hono";
 
@@ -13,22 +13,29 @@ const getAuthor = async (ctx: Context) => {
   authorName = decodeURIComponent(authorName);
 
   try {
-    const authors = await db.query.authors.findMany({
-      where: ((authors, { ilike }) => ilike(authors.name, authorName))
+    const authors = await prisma.authors.findMany({
+      where: {
+        name: {
+          contains: `%${authorName}%`,
+        },
+      },
     });
 
     return ctx.json({
       success: true,
-      data: authors
-    })
+      data: authors,
+    });
   } catch (error) {
     logger.error(error);
 
-    return ctx.json({
-      success: false,
-      message: "An error occurred while fetching author"
-    }, 500);
+    return ctx.json(
+      {
+        success: false,
+        message: "An error occurred while fetching author",
+      },
+      500,
+    );
   }
-}
+};
 
 export default getAuthor;

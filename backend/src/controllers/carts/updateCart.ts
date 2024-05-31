@@ -1,41 +1,62 @@
-import { carts } from "$/db/schema/carts";
-import db from "@/config/db";
+import prisma from "@/config/db";
 import logger from "@/config/logger";
 import type { HonoContext } from "@/types/hono";
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 const cartSchema = z.object({
   book_id: z.number(),
-  quantity: z.number().min(1).default(1)
-})
+  quantity: z.number().min(1).default(1),
+  rent_to: z
+    .string()
+    .datetime()
+    .refine((value) => new Date(value).getTime() - Date.now() > 10000),
+});
 
 const updateCart = async (ctx: HonoContext) => {
   try {
-    const { book_id, quantity } = cartSchema.parse(await ctx.req.json());
-    const { id } = ctx.get('user');
+    const { book_id, quantity, rent_to } = cartSchema.parse(
+      await ctx.req.json(),
+    );
+    const { id } = ctx.get("user");
 
-    const updatedCart = await db.update(carts).set({ quantity }).where(and(eq(carts.user_id, id), eq(carts.book_id, book_id))).returning();
+    const updatedCart = await prisma.carts.update({
+      where: {
+        user_id_book_id: {
+          user_id: id,
+          book_id: book_id,
+        },
+      },
+      data: {
+        quantity,
+        rent_to,
+      },
+    });
 
     return ctx.json({
       success: true,
-      data: updatedCart
-    })
+      data: updatedCart,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return ctx.json({
-        success: false,
-        message: error.errors
-      }, 400)
+      return ctx.json(
+        {
+          success: false,
+          message: error.errors,
+        },
+        400,
+      );
     }
 
     logger.error(error);
 
-    return ctx.json({
-      success: false,
-      message: "Internal server error"
-    }, 500)
+    return ctx.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      500,
+    );
   }
-}
+};
 
 export default updateCart;
